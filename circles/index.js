@@ -31,7 +31,6 @@ d3.csv(
       .range(d3.schemeSet1);
 
     d3.select("#countries")
-      .selectAll("div")
       .data(data)
       .enter()
       .append("div")
@@ -55,7 +54,8 @@ d3.csv(
       .style("border", "solid")
       .style("border-width", "2px")
       .style("border-radius", "5px")
-      .style("padding", "5px");
+      .style("padding", "5px")
+      .style("transition", "0.8s");
 
     // Three function that change the tooltip when user hover / move / leave a cell
     var mouseover = function () {
