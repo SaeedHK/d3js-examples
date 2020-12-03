@@ -4,6 +4,9 @@ console.log("index.js is called");
 var width = 460;
 var height = 460;
 
+// append a parent div for list of countries
+d3.select("body").append("div").attr("id", "countries");
+
 // append the svg object to the body of the page
 var svg = d3
   .select("#my_dataviz")
@@ -27,6 +30,18 @@ d3.csv(
       .domain(["Asia", "Europe", "Africa", "Oceania", "Americas"])
       .range(d3.schemeSet1);
 
+    d3.select("#countries")
+      .selectAll("div")
+      .data(data)
+      .enter()
+      .append("div")
+      .text((d) => {
+        console.log(d);
+        return d.key;
+      })
+      .style("margin", "10px")
+      .style("color", (d) => color(d.region));
+
     // Size scale for countries
     var size = d3.scaleLinear().domain([0, 1400000000]).range([7, 55]); // circle will be between 7 and 55 px wide
 
@@ -43,7 +58,7 @@ d3.csv(
       .style("padding", "5px");
 
     // Three function that change the tooltip when user hover / move / leave a cell
-    var mouseover = function (d) {
+    var mouseover = function () {
       Tooltip.style("opacity", 1);
     };
     var mousemove = function (d) {
@@ -51,7 +66,7 @@ d3.csv(
         .style("left", d3.mouse(this)[0] + 20 + "px")
         .style("top", d3.mouse(this)[1] + "px");
     };
-    var mouseleave = function (d) {
+    var mouseleave = function () {
       Tooltip.style("opacity", 0);
     };
 
@@ -109,7 +124,7 @@ d3.csv(
 
     // Apply these forces to the nodes and update their positions.
     // Once the force algorithm is happy with positions ('alpha' value is low enough), simulations will stop.
-    simulation.nodes(data).on("tick", function (d) {
+    simulation.nodes(data).on("tick", function () {
       node
         .attr("cx", function (d) {
           return d.x;
