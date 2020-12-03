@@ -1,8 +1,8 @@
 console.log("index.js is called");
 
 d3.json("/miserables.json", (data) => {
-  const height = 600;
-  const width = 600;
+  const height = 1000;
+  const width = 1000;
   console.log(data);
   const scale = d3.scaleOrdinal(d3.schemeCategory10);
   const color = (d) => scale(d.group);
@@ -43,7 +43,10 @@ d3.json("/miserables.json", (data) => {
     .force("charge", d3.forceManyBody())
     .force("center", d3.forceCenter(width / 2, height / 2));
 
-  const svg = d3.create("svg").attr("viewBox", [0, 0, width, height]);
+  var svg = d3
+    .select("body")
+    .append("svg")
+    .attr("viewBox", [0, 0, width, height]);
 
   const link = svg
     .append("g")
@@ -51,7 +54,8 @@ d3.json("/miserables.json", (data) => {
     .attr("stroke-opacity", 0.6)
     .selectAll("line")
     .data(links)
-    .join("line")
+    .enter()
+    .append("line")
     .attr("stroke-width", (d) => Math.sqrt(d.value));
 
   const node = svg
@@ -60,7 +64,8 @@ d3.json("/miserables.json", (data) => {
     .attr("stroke-width", 1.5)
     .selectAll("circle")
     .data(nodes)
-    .join("circle")
+    .enter()
+    .append("circle")
     .attr("r", 5)
     .attr("fill", color)
     .call(drag(simulation));
@@ -78,6 +83,4 @@ d3.json("/miserables.json", (data) => {
   });
 
   invalidation.then(() => simulation.stop());
-
-  return svg.node();
 });
