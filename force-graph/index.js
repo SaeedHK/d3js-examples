@@ -7,23 +7,23 @@ d3.json("/miserables.json", (data) => {
   const scale = d3.scaleOrdinal(d3.schemeCategory10);
   const color = (d) => scale(d.group);
   const drag = (simulation) => {
-    function dragstarted(event) {
+    function dragstarted() {
       console.log("DRAG STARTED");
-      if (!event.active) simulation.alphaTarget(0.3).restart();
-      event.fx = d3.mouse(this)[0];
-      event.fy = d3.mouse(this)[1];
+      if (!d3.event.active) simulation.alphaTarget(0.3).restart();
+      d3.event.subject.fx = d3.event.subject.x;
+      d3.event.subject.fy = d3.event.subject.y;
     }
 
-    function dragged(event) {
-      event.fx = d3.mouse(this)[0];
-      event.fy = d3.mouse(this)[1];
+    function dragged() {
+      d3.event.subject.fx = d3.event.x;
+      d3.event.subject.fy = d3.event.y;
     }
 
-    function dragended(event) {
+    function dragended() {
       console.log("DRAG ENDED");
-      if (!event.active) simulation.alphaTarget(0);
-      event.fx = null;
-      event.fy = null;
+      if (!d3.event.active) simulation.alphaTarget(0);
+      d3.event.subject.fx = null;
+      d3.event.subject.fy = null;
     }
 
     return d3
