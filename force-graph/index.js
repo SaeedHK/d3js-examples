@@ -9,23 +9,19 @@ d3.json("/miserables.json", (data) => {
   const drag = (simulation) => {
     function dragstarted(event) {
       console.log("DRAG STARTED");
-      console.log(event);
       if (!event.active) simulation.alphaTarget(0.3).restart();
-      event.fx = event.x;
-      event.fy = event.y;
+      event.fx = d3.mouse(this)[0];
+      event.fy = d3.mouse(this)[1];
     }
 
     function dragged(event) {
-      console.log("DRAG RUNNING");
-      console.log(event);
-      event.fx = event.x;
-      event.fy = event.y;
+      event.fx = d3.mouse(this)[0];
+      event.fy = d3.mouse(this)[1];
     }
 
     function dragended(event) {
       console.log("DRAG ENDED");
       if (!event.active) simulation.alphaTarget(0);
-      console.log(event);
       event.fx = null;
       event.fy = null;
     }
@@ -70,19 +66,19 @@ d3.json("/miserables.json", (data) => {
   const node = svg
     .append("g")
     .attr("stroke", "#fff")
-    .attr("stroke-width", 0)
+    .attr("stroke-width", 2)
     .selectAll("circle")
     .data(nodes)
     .enter()
     .append("circle")
-    .attr("r", 7)
+    .attr("r", 5)
     .attr("fill", color)
     .call(drag(simulation));
 
   node.append("title").text((d) => d.id);
 
   simulation.on("tick", () => {
-    console.log(`Alpha is ${simulation.alpha()}`);
+    // console.log(`Alpha is ${simulation.alpha()}`);
     link
       .attr("x1", (d) => d.source.x)
       .attr("y1", (d) => d.source.y)
@@ -94,6 +90,4 @@ d3.json("/miserables.json", (data) => {
 
   console.log(`Alpha min is ${simulation.alphaMin()}`);
   console.log(`Alpha target is ${simulation.alphaTarget()}`);
-
-  //invalidation.then(() => simulation.stop());
 });
