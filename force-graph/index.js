@@ -1,27 +1,33 @@
 console.log("index.js is called");
 
 d3.json("/miserables.json", (data) => {
-  const height = 1000;
-  const width = 1000;
+  const height = 1500;
+  const width = 1500;
   console.log(data);
   const scale = d3.scaleOrdinal(d3.schemeCategory10);
   const color = (d) => scale(d.group);
   const drag = (simulation) => {
     function dragstarted(event) {
+      console.log("DRAG STARTED");
+      console.log(event);
       if (!event.active) simulation.alphaTarget(0.3).restart();
-      event.subject.fx = event.subject.x;
-      event.subject.fy = event.subject.y;
+      event.fx = event.x;
+      event.fy = event.y;
     }
 
     function dragged(event) {
-      event.subject.fx = event.x;
-      event.subject.fy = event.y;
+      console.log("DRAG RUNNING");
+      console.log(event);
+      event.fx = event.x;
+      event.fy = event.y;
     }
 
     function dragended(event) {
+      console.log("DRAG ENDED");
       if (!event.active) simulation.alphaTarget(0);
-      event.subject.fx = null;
-      event.subject.fy = null;
+      console.log(event);
+      event.fx = null;
+      event.fy = null;
     }
 
     return d3
@@ -34,6 +40,9 @@ d3.json("/miserables.json", (data) => {
   const links = data.links.map((d) => Object.create(d));
   const nodes = data.nodes.map((d) => Object.create(d));
 
+  // FROM D3JS : To use this module, create a simulation for an array of nodes, and compose
+  // the desired forces. Then listen for tick events to render the nodes as
+  // they update in your preferred graphics system, such as Canvas or SVG.
   const simulation = d3
     .forceSimulation(nodes)
     .force(
@@ -41,7 +50,7 @@ d3.json("/miserables.json", (data) => {
       d3.forceLink(links).id((d) => d.id)
     )
     .force("charge", d3.forceManyBody())
-    .force("center", d3.forceCenter(width / 2, height / 2));
+    .force("center", d3.forceCenter(width / 2, height / 3));
 
   var svg = d3
     .select("body")
@@ -51,7 +60,7 @@ d3.json("/miserables.json", (data) => {
   const link = svg
     .append("g")
     .attr("stroke", "#999")
-    .attr("stroke-opacity", 0.6)
+    .attr("stroke-opacity", 0.1)
     .selectAll("line")
     .data(links)
     .enter()
@@ -61,18 +70,19 @@ d3.json("/miserables.json", (data) => {
   const node = svg
     .append("g")
     .attr("stroke", "#fff")
-    .attr("stroke-width", 1.5)
+    .attr("stroke-width", 0)
     .selectAll("circle")
     .data(nodes)
     .enter()
     .append("circle")
-    .attr("r", 5)
+    .attr("r", 7)
     .attr("fill", color)
     .call(drag(simulation));
 
   node.append("title").text((d) => d.id);
 
   simulation.on("tick", () => {
+    console.log(`Alpha is ${simulation.alpha()}`);
     link
       .attr("x1", (d) => d.source.x)
       .attr("y1", (d) => d.source.y)
@@ -82,5 +92,8 @@ d3.json("/miserables.json", (data) => {
     node.attr("cx", (d) => d.x).attr("cy", (d) => d.y);
   });
 
-  invalidation.then(() => simulation.stop());
+  console.log(`Alpha min is ${simulation.alphaMin()}`);
+  console.log(`Alpha target is ${simulation.alphaTarget()}`);
+
+  //invalidation.then(() => simulation.stop());
 });
